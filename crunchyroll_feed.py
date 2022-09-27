@@ -14,6 +14,7 @@ import dateutil.parser
 import crunchyroll
 import session
 
+
 @dataclass
 class Title:
     title: str
@@ -24,6 +25,7 @@ class Title:
     season: int
     series: str
     slug: str
+
 
 @dataclass
 class Viewing:
@@ -43,7 +45,9 @@ class Viewing:
     def __str__(self) -> str:
         return f'{self.ts}: {self.id} {self.title}'
 
+    @property
     def rss(self) -> str:
+        """Returns an RSS <item></item>"""
         date = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(self.timestamp))
         url = f'https://crunchyroll.com/watch/{self.id}/{self.show.slug}'
         dur = ''
@@ -118,7 +122,7 @@ def write_feed(viewings: Sequence[Viewings], cfg) -> str:
             if v.show.series.startswith('Dragon Ball Z'):
                 logging.debug(f'Skipping {v.timestamp} {v.show.series}')
                 continue
-            f.write(v.rss())
+            f.write(v.rss)
         f.write("</channel></rss>\n")
     return update_status
 

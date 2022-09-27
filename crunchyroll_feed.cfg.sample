@@ -1,0 +1,7 @@
+[main]
+username = user@example.org
+password = correcthorsebatterystaple
+[feed]
+filename = crunchyroll-activity.xml
+href = http://domain.org/%(filename)s
+title = My Crunchyroll Activity Feed

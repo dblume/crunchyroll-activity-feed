@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/license-MIT_license-blue.svg)](https://raw.githubusercontent.com/dblume/crunchyroll-activity-feed/main/LICENSE.txt)
+[![License](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](https://raw.githubusercontent.com/dblume/crunchyroll-activity-feed/main/LICENSE)
 ![python3.x](https://img.shields.io/badge/python-3.x-green.svg)
 
 ## Crunchyroll Activity Feed

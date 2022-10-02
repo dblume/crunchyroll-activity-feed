@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Generate an RSS activity feed from your Crunchyroll history"""
+
 from __future__ import annotations
 import os
 import sys
@@ -14,6 +16,10 @@ import dateutil.parser
 import crunchyroll
 import session
 
+__author__ = "David Blume"
+__copyright__ = "Copyright 2021, David Blume"
+__license__ = "Apache 2.0"
+__version__ = "1.0"
 
 @dataclass
 class Title:

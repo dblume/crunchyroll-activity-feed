@@ -68,13 +68,13 @@ class Viewing:
                 title = f'{self.show.series} S{self.show.season}:E{self.show.episode} {self.show.title}{dur}'
         else:
             title = f'{self.show.title} (a {self.show.type}){dur}'
-
+        desc = self.show.description.replace("\r", '')  # remove ^M in some descriptions
         return (f"<item>"
                 f"<title>{escape(title)}</title>"
                 f"<pubDate>{date}</pubDate>"
                 f"<link>{escape(url)}</link>"
                 f"<guid isPermaLink=\"false\">{self.timestamp}</guid>"
-                f"<description><![CDATA[{self.show.description}]]></description>"
+                f"<description><![CDATA[{desc}]]></description>"
                 f"</item>\n")
 
 
@@ -133,22 +133,33 @@ def write_feed(viewings: Sequence[Viewings], cfg) -> str:
     return update_status
 
 
-def main() -> None:
+def main(jsonfile: str) -> None:
     """The main function, does the whole thing."""
     start_time = time.time()
     cfg = cfgreader.CfgReader(__file__.replace('.py', '.cfg'))
 
-    try:
-        cr = crunchyroll.crunchyroll()
-        if not cr.logged_in():
-            cr.login(cfg.main.username, cfg.main.password)
-            logging.debug("Logged in.")
-        history_json = cr.history(50)
-    except BaseException as e:
-        logging.error(f"{e}")
-        raise
-    if len(history_json) == 0:
-        logging.warning("No history returned from Crunchyroll API.")
+    if jsonfile:
+        with open(jsonfile, 'r', encoding='utf-8') as f:
+            j = json.load(f)
+            if 'next_page' in j and 'items' in j:
+                history_json = j['items']
+            elif len(j) > 1 and 'id' in j[0]:
+                history_json = j
+            else:
+                logging.error(f"{jsonfile} did not contain Crunchyroll history data.")
+    else:
+        try:
+            cr = crunchyroll.crunchyroll()
+            if not cr.logged_in():
+                cr.login(cfg.main.username, cfg.main.password)
+                logging.debug("Logged in.")
+            history_json = cr.history(50)
+        except BaseException as e:
+            logging.error(f"{e}")
+            raise
+        if len(history_json) == 0:
+            logging.warning("No history returned from Crunchyroll API.")
+
     viewings: List[Viewing] = []
     for i in history_json:
         viewing = make_viewing(i)
@@ -164,6 +175,7 @@ if __name__ == '__main__':
     parser = ArgumentParser(description="Make a Crunchyroll activity feed.")
     parser.add_argument('-o', '--outfile')
     parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('jsonfile', nargs='?', help='Json from Crunchyroll History query')
     args = parser.parse_args()
     if args.outfile is None:
         handler = logging.StreamHandler(sys.stdout)
@@ -173,4 +185,6 @@ if __name__ == '__main__':
                         format='%(asctime)s %(message)s',
                         datefmt='%Y-%m-%d %H:%M',
                         level=logging.DEBUG if args.verbose else logging.INFO)
-    main()
+    if args.jsonfile:
+        import json
+    main(args.jsonfile)

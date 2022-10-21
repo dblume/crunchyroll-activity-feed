@@ -64,8 +64,11 @@ class crunchyroll:
             'page_size': str(num_entries)
         }
         endpoint = f'https://beta.crunchyroll.com/content/v1/watch-history/{self.session["account_id"]}'
-        r = req.get(endpoint, params=params).json()
-        if err := session.check_error(r):
+        r = req.get(endpoint, params=params)
+        if not r.ok:
+            raise BaseException(f"get history failure: {r.status_code} {r.reason}")
+        j = r.json()
+        if err := session.check_error(j)
             raise BaseException("crunchyroll.history: " + err)
-        return r['items']
+        return j['items']
 

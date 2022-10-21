@@ -141,7 +141,7 @@ def main() -> None:
     try:
         cr = crunchyroll.crunchyroll()
         if not cr.logged_in():
-            login(cfg.main.username, cfg.main.password)
+            cr.login(cfg.main.username, cfg.main.password)
             logging.debug("Logged in.")
         history_json = cr.history(50)
     except BaseException as e:

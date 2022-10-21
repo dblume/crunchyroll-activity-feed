@@ -68,7 +68,7 @@ class crunchyroll:
         if not r.ok:
             raise BaseException(f"get history failure: {r.status_code} {r.reason}")
         j = r.json()
-        if err := session.check_error(j)
+        if err := session.check_error(j):
             raise BaseException("crunchyroll.history: " + err)
         return j['items']
 

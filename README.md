@@ -59,6 +59,21 @@ to deny access to it. If you have a .htaccess file, you can do so with
 
 Here's [an example feed](http://feed.dlma.com/crunchyroll-activity.xml). It [meets RSS validation requirements](https://validator.w3.org/feed/check.cgi?url=http%3A//feed.dlma.com/crunchyroll-activity.xml). &check;
 
+## Creating a feed from JSON files directly
+
+You can save JSON files and pass them in to `crunchyroll_feed.py`.
+
+1. From Chrome, open Inspect at Crunchyroll's main page.
+2. Select the Inspector's Network tab, and ensure it's recording. Optionally filter for the term `page_size`.
+3. Navigate to your History page from your Profile icon at the top right.
+4. In the Inspector, select the request with `page_size`, and then select its Preview tab.
+5. Copy the JSON (both "Copy Value" and "Copy Object" work) and save it to file.
+6. Optionally scroll down in the History to retrive more JSON pages and save them too.
+
+Then run the script with the saved files as arguments:
+
+    ./crunchyroll_feed.py page1.json page2.json
+
 ## Is it any good?
 
 [Yes](https://news.ycombinator.com/item?id=3067434).

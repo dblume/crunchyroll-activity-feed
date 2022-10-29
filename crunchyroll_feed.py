@@ -133,20 +133,22 @@ def write_feed(viewings: Sequence[Viewings], cfg) -> str:
     return update_status
 
 
-def main(jsonfile: str) -> None:
+def main(jsonfiles: Sequence[str]) -> None:
     """The main function, does the whole thing."""
     start_time = time.time()
     cfg = cfgreader.CfgReader(__file__.replace('.py', '.cfg'))
 
-    if jsonfile:
-        with open(jsonfile, 'r', encoding='utf-8') as f:
-            j = json.load(f)
-            if 'next_page' in j and 'items' in j:
-                history_json = j['items']
-            elif len(j) > 1 and 'id' in j[0]:
-                history_json = j
-            else:
-                logging.error(f"{jsonfile} did not contain Crunchyroll history data.")
+    if jsonfiles:
+        history_json = []
+        for jsonfile in jsonfiles:
+            with open(jsonfile, 'r', encoding='utf-8') as f:
+                j = json.load(f)
+                if 'next_page' in j and 'items' in j:
+                    history_json += j['items']
+                elif len(j) > 1 and 'id' in j[0]:
+                    history_json += j
+                else:
+                    logging.error(f"{jsonfile} did not contain Crunchyroll history data.")
     else:
         try:
             cr = crunchyroll.crunchyroll()
@@ -175,7 +177,8 @@ if __name__ == '__main__':
     parser = ArgumentParser(description="Make a Crunchyroll activity feed.")
     parser.add_argument('-o', '--outfile')
     parser.add_argument('-v', '--verbose', action='store_true')
-    parser.add_argument('jsonfile', nargs='?', help='Json from Crunchyroll History query')
+    parser.add_argument('jsonfiles', nargs='*',
+                        help='Optional JSON files from Crunchyroll history query')
     args = parser.parse_args()
     if args.outfile is None:
         handler = logging.StreamHandler(sys.stdout)
@@ -185,6 +188,6 @@ if __name__ == '__main__':
                         format='%(asctime)s %(message)s',
                         datefmt='%Y-%m-%d %H:%M',
                         level=logging.DEBUG if args.verbose else logging.INFO)
-    if args.jsonfile:
+    if args.jsonfiles:
         import json
-    main(args.jsonfile)
+    main(args.jsonfiles)

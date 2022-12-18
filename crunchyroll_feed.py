@@ -143,8 +143,10 @@ def main(jsonfiles: Sequence[str]) -> None:
         for jsonfile in jsonfiles:
             with open(jsonfile, 'r', encoding='utf-8') as f:
                 j = json.load(f)
-                if 'next_page' in j and 'items' in j:
+                if 'next_page' in j and 'items' in j:  # Orig format
                     history_json += j['items']
+                elif 'meta' in j and 'next_page' in j['meta'] and 'data' in j:  # 2022-12-18 format
+                    history_json += j['data']
                 elif len(j) > 1 and 'id' in j[0]:
                     history_json += j
                 else:
